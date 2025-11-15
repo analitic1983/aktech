@@ -12,9 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('slots', function (Blueprint $table) {
-            $table->id();
+            $table->uuid()->primary();
             $table->unsignedInteger('capacity');
-            $table->unsignedInteger('remaining');
+            $table->unsignedInteger('used');
             $table->timestamps();
         });
     }
