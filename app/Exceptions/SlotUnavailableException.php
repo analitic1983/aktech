@@ -2,8 +2,8 @@
 
 namespace App\Exceptions;
 
-use RuntimeException;
+use App\Exceptions\Interfaces\BusinessExceptionInterface;
 
-class SlotUnavailableException extends RuntimeException
+class SlotUnavailableException extends \Exception implements BusinessExceptionInterface
 {
 }

@@ -2,8 +2,8 @@
 
 namespace App\Exceptions;
 
-use RuntimeException;
+use App\Exceptions\Interfaces\BusinessExceptionInterface;
 
-class HoldNotConfirmableException extends RuntimeException
+class HoldNotConfirmableException extends \Exception implements BusinessExceptionInterface
 {
 }

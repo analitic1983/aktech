@@ -18,7 +18,6 @@ return new class extends Migration {
                 ->on('slots')
                 ->cascadeOnDelete();
             $table->enum('status', ['held', 'confirmed', 'cancelled']);
-            $table->string('idempotency_key')->unique();
             $table->timestamp('expires_at')->nullable();
             $table->timestamp('confirmed_at')->nullable();
             $table->timestamp('cancelled_at')->nullable();

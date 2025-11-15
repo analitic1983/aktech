@@ -2,8 +2,8 @@
 
 namespace App\Exceptions;
 
-use RuntimeException;
+use App\Exceptions\Interfaces\BusinessExceptionInterface;
 
-class HoldMismatchException extends RuntimeException
+class HoldMismatchException  extends \Exception implements BusinessExceptionInterface
 {
 }

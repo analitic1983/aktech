@@ -1,0 +1,361 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Slot Service API",
+        "description": "API для работы со слотами, холдами, подтверждением и т.д.",
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/api/slots/{slotUuid}/hold": {
+            "post": {
+                "tags": [
+                    "Holds"
+                ],
+                "summary": "Создать hold для слота",
+                "operationId": "264286a5cf9f22b7e51c82c319d069ad",
+                "parameters": [
+                    {
+                        "name": "slotUuid",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    },
+                    {
+                        "name": "Idempotency-Key",
+                        "in": "header",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Успешный ответ",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/SuccessFlag"
+                                        },
+                                        {
+                                            "$ref": "#/components/schemas/HoldDto"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Некорректные данные запроса",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Бизнес-ошибка (например, слот недоступен)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/holds/{holdUuid}/confirm": {
+            "post": {
+                "tags": [
+                    "Holds"
+                ],
+                "summary": "Подтвердить hold",
+                "operationId": "a9dc00d67d55a3273a82cb22db30b894",
+                "parameters": [
+                    {
+                        "name": "holdUuid",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    },
+                    {
+                        "name": "Idempotency-Key",
+                        "in": "header",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Успешное подтверждение",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/SuccessFlag"
+                                        },
+                                        {
+                                            "$ref": "#/components/schemas/HoldDto"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Некорректный Idempotency-Key",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Невозможно подтвердить hold или слот недоступен",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/holds/{holdUuid}/cancel": {
+            "post": {
+                "tags": [
+                    "Holds"
+                ],
+                "summary": "Отменить hold",
+                "operationId": "425cc480dce02757174f72192fe38c9d",
+                "parameters": [
+                    {
+                        "name": "holdUuid",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    },
+                    {
+                        "name": "Idempotency-Key",
+                        "in": "header",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Успешная отмена",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/SuccessFlag"
+                                        },
+                                        {
+                                            "$ref": "#/components/schemas/HoldDto"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Некорректный Idempotency-Key",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Невозможно отменить hold",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/slots/availability": {
+            "get": {
+                "tags": [
+                    "Slots"
+                ],
+                "summary": "Получить доступность всех слотов",
+                "description": "Возвращает список всех слотов с capacity и remaining. В случае успешного ответа — success=true и данные слотов, в случае ошибки — success=false и сообщение.",
+                "operationId": "f6f70b7d24c492c37fbb84b776701d78",
+                "responses": {
+                    "200": {
+                        "description": "Успешный ответ",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/SuccessFlag"
+                                        },
+                                        {
+                                            "$ref": "#/components/schemas/SlotsAvailabilityDto"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "408": {
+                        "description": "Таймаут блокировки, попробуйте запрос позже",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "HoldDto": {
+                "description": "Данные о hold",
+                "properties": {
+                    "uuid": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "slot_uuid": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "status": {
+                        "description": "Статус hold: active / confirmed / cancelled / expired",
+                        "type": "string"
+                    },
+                    "expires_at": {
+                        "description": "Когда hold автоматически истечёт",
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                    },
+                    "confirmed_at": {
+                        "description": "Когда hold был подтверждён",
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                    },
+                    "cancelled_at": {
+                        "description": "Когда hold был отменён",
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
+            },
+            "SlotAvailabilityDto": {
+                "description": "Информация о доступности слота",
+                "properties": {
+                    "slot_uuid": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "capacity": {
+                        "type": "integer"
+                    },
+                    "remaining": {
+                        "description": "Количество доступных мест с учётом активных hold",
+                        "type": "integer"
+                    }
+                },
+                "type": "object"
+            },
+            "SlotsAvailabilityDto": {
+                "description": "Список доступности слотов",
+                "properties": {
+                    "slots": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/SlotAvailabilityDto"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "ErrorResponse": {
+                "description": "Стандартный формат ошибки API",
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": false
+                    },
+                    "message": {
+                        "type": "string",
+                        "example": "Please try again after 5 seconds."
+                    }
+                },
+                "type": "object"
+            },
+            "SuccessFlag": {
+                "description": "Флаг успешности ответа",
+                "properties": {
+                    "success": {
+                        "description": "Признак успешного ответа",
+                        "type": "boolean",
+                        "example": true
+                    }
+                },
+                "type": "object"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Holds",
+            "description": "Holds"
+        },
+        {
+            "name": "Slots",
+            "description": "Slots"
+        }
+    ]
+}
